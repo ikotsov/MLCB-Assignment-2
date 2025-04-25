@@ -8,14 +8,10 @@ from sklearn.metrics import matthews_corrcoef, roc_auc_score, balanced_accuracy_
 import optuna
 from optuna.samplers import TPESampler
 
-# Number of trials for Optuna
-NUM_TRIALS = 50
-# Number of rounds for the nCV
-DEFAULT_R = 10
-# Number of outer fold loops
-DEFAULT_N = 5
-# Number of inner fold loops
-DEFAULT_K = 3
+NUM_TRIALS = 50  # Number of trials for Optuna
+DEFAULT_R = 10  # Number of rounds for the nCV
+DEFAULT_N = 5  # Number of outer fold loops
+DEFAULT_K = 3  # Number of inner fold loops
 DEFAULT_SEED = 42
 
 
