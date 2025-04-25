@@ -21,6 +21,24 @@ class RepeatedNestedCV:
     It supports multiple estimators, hyperparameter optimization via Optuna and metric evaluation.
     """
 
+    METRICS = {
+        'MCC': matthews_corrcoef,
+        'AUC': roc_auc_score,
+        'BA': balanced_accuracy_score,
+        'F1': f1_score,
+        'F2': lambda y_true, y_pred: fbeta_score(y_true, y_pred, beta=2),
+        'Recall': recall_score,
+        'Precision': precision_score
+    }
+
+    @classmethod
+    def get_metric_names(cls):
+        """
+        Returns:
+            list[str]: A list of metric names used in the evaluation phase.
+        """
+        return list(cls.METRICS.keys())
+
     def __init__(self, X, y, estimators, param_spaces, R=DEFAULT_R, N=DEFAULT_N, K=DEFAULT_K, seed=DEFAULT_SEED):
         """
         Initialize the RepeatedNestedCV class.
@@ -124,12 +142,12 @@ class RepeatedNestedCV:
         ])
 
     def _compute_metrics(self, y_true, y_pred, y_prob=None):
-        return {
-            'MCC': matthews_corrcoef(y_true, y_pred),
-            'AUC': roc_auc_score(y_true, y_prob) if y_prob is not None else np.nan,
-            'BA': balanced_accuracy_score(y_true, y_pred),
-            'F1': f1_score(y_true, y_pred),
-            'F2': fbeta_score(y_true, y_pred, beta=2),
-            'Recall': recall_score(y_true, y_pred),
-            'Precision': precision_score(y_true, y_pred)
-        }
+        results = {}
+        for name, metric_fn in self.METRICS.items():
+            # AUC requires probability estimates instead of discrete predictions
+            if name == 'AUC':
+                results[name] = metric_fn(
+                    y_true, y_prob) if y_prob is not None else np.nan
+            else:
+                results[name] = metric_fn(y_true, y_pred)
+        return results
