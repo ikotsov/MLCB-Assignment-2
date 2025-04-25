@@ -16,7 +16,27 @@ DEFAULT_SEED = 42
 
 
 class RepeatedNestedCV:
+    """
+    This class implements a repeated nested cross-validation (rnCV) pipeline for model selection and performance estimation.
+    It supports multiple estimators, hyperparameter optimization via Optuna and metric evaluation.
+    """
+
     def __init__(self, X, y, estimators, param_spaces, R=DEFAULT_R, N=DEFAULT_N, K=DEFAULT_K, seed=DEFAULT_SEED):
+        """
+        Initialize the RepeatedNestedCV class.
+
+        Args:
+            X (array-like): Feature matrix of shape (n_samples, n_features).
+            y (array-like): Target vector of shape (n_samples,).
+            estimators (dict): Dictionary mapping estimator names to constructor callables.
+            param_spaces (dict): Dictionary mapping estimator names to Optuna-compatible 
+                hyperparameter search space functions.
+            R (int, optional): Number of repetitions for repeated nested CV.
+            N (int, optional): Number of outer folds for generalization evaluation.
+            K (int, optional): Number of inner folds for hyperparameter tuning.
+            seed (int, optional): Base random seed used to ensure reproducibility across folds 
+                and tuning trials.
+        """
         self.X = X
         self.y = y
         self.estimators = estimators
