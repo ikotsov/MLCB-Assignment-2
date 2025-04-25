@@ -8,9 +8,19 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import matthews_corrcoef, roc_auc_score, balanced_accuracy_score, f1_score, fbeta_score, recall_score, precision_score
 import optuna
 
+# Number of trials for Optuna
+NUM_TRIALS = 50
+# Number of rounds for the nCV
+DEFAULT_R = 10
+# Number of outer fold loops
+DEFAULT_N = 5
+# Number of inner fold loops
+DEFAULT_K = 3
+DEFAULT_SEED = 42
+
 
 class RepeatedNestedCV:
-    def __init__(self, X, y, estimators, param_spaces, R=10, N=5, K=3, seed=42):
+    def __init__(self, X, y, estimators, param_spaces, R=DEFAULT_R, N=DEFAULT_N, K=DEFAULT_K, seed=DEFAULT_SEED):
         self.X = X
         self.y = y
         self.estimators = estimators
@@ -37,7 +47,7 @@ class RepeatedNestedCV:
                     print(f"Tuning: {name}")
                     study = optuna.create_study(direction="maximize")
                     study.optimize(lambda trial: self._objective(
-                        trial, name, X_train, y_train), n_trials=50)
+                        trial, name, X_train, y_train), n_trials=NUM_TRIALS)
 
                     best_params = study.best_params
                     estimator_cls = self.estimators[name]
