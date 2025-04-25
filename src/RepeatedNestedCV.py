@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -69,8 +68,8 @@ class RepeatedNestedCV:
 
         return self.results
 
-    def to_dataframe(self):
-        return pd.DataFrame(self.results)
+    def get_results(self):
+        return self.results
 
     def _objective(self, trial, estimator_name, X_train, y_train, rep):
         estimator_class = self.estimators[estimator_name]
