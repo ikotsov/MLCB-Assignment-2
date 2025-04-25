@@ -47,7 +47,7 @@ class RepeatedNestedCV:
                     print(f"Tuning: {name}")
                     study = optuna.create_study(direction="maximize")
                     study.optimize(lambda trial: self._objective(
-                        trial, name, X_train, y_train), n_trials=NUM_TRIALS)
+                        trial, name, X_train, y_train, r), n_trials=NUM_TRIALS)
 
                     best_params = study.best_params
                     estimator_cls = self.estimators[name]
@@ -72,7 +72,7 @@ class RepeatedNestedCV:
     def to_dataframe(self):
         return pd.DataFrame(self.results)
 
-    def _objective(self, trial, estimator_name, X_train, y_train):
+    def _objective(self, trial, estimator_name, X_train, y_train, rep):
         estimator_class = self.estimators[estimator_name]
         param_space = self.param_spaces[estimator_name]
         # Suggest a new set of hyperparameters for this trial
@@ -81,7 +81,7 @@ class RepeatedNestedCV:
         pipeline = self._build_pipeline(estimator_class(**params))
 
         inner_cv = StratifiedKFold(
-            n_splits=self.K, shuffle=True, random_state=self.seed)
+            n_splits=self.K, shuffle=True, random_state=self.seed + rep)
 
         scores = []
         for train_subset, val_subset in inner_cv.split(X_train, y_train):
