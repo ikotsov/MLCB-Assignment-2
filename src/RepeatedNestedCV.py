@@ -31,6 +31,8 @@ class RepeatedNestedCV:
         self.results = []
 
     def run(self):
+        self.clear_results()  # Reset results on each call
+
         for r in range(self.R):
             print(f"\n>>> Repetition {r + 1}/{self.R}")
 
@@ -70,6 +72,9 @@ class RepeatedNestedCV:
 
     def get_results(self):
         return self.results
+
+    def clear_results(self):
+        self.results = []
 
     def _objective(self, trial, estimator_name, X_train, y_train, rep):
         estimator_class = self.estimators[estimator_name]
