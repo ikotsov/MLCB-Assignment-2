@@ -6,6 +6,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.decomposition import PCA
 from sklearn.metrics import matthews_corrcoef, roc_auc_score, balanced_accuracy_score, f1_score, fbeta_score, recall_score, precision_score
 import optuna
+from optuna.samplers import TPESampler
 
 # Number of trials for Optuna
 NUM_TRIALS = 50
@@ -46,7 +47,8 @@ class RepeatedNestedCV:
 
                 for name in self.estimators:
                     print(f"Tuning: {name}")
-                    study = optuna.create_study(direction="maximize")
+                    study = optuna.create_study(
+                        direction="maximize", sampler=TPESampler(seed=self.seed + r))
                     study.optimize(lambda trial: self._objective(
                         trial, name, X_train, y_train, r), n_trials=NUM_TRIALS)
 
