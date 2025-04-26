@@ -21,23 +21,7 @@ class RepeatedNestedCV:
     It supports multiple estimators, hyperparameter optimization via Optuna and metric evaluation.
     """
 
-    METRICS = {
-        'MCC': matthews_corrcoef,
-        'AUC': roc_auc_score,
-        'BA': balanced_accuracy_score,
-        'F1': f1_score,
-        'F2': lambda y_true, y_pred: fbeta_score(y_true, y_pred, beta=2),
-        'Recall': recall_score,
-        'Precision': precision_score
-    }
-
-    @classmethod
-    def get_metric_names(cls):
-        """
-        Returns:
-            list[str]: A list of metric names used in the evaluation phase.
-        """
-        return list(cls.METRICS.keys())
+    METRICS = ['MCC', 'AUC', 'BA', 'F1', 'F2', 'Recall', 'Precision']
 
     def __init__(self, X, y, estimators, param_spaces, R=DEFAULT_R, N=DEFAULT_N, K=DEFAULT_K, seed=DEFAULT_SEED):
         """
@@ -143,11 +127,21 @@ class RepeatedNestedCV:
 
     def _compute_metrics(self, y_true, y_pred, y_prob=None):
         results = {}
-        for name, metric_fn in self.METRICS.items():
+        for name in self.METRICS:
+            if name == 'MCC':
+                results[name] = matthews_corrcoef(y_true, y_pred)
             # AUC requires probability estimates instead of discrete predictions
-            if name == 'AUC':
-                results[name] = metric_fn(
+            elif name == 'AUC':
+                results[name] = roc_auc_score(
                     y_true, y_prob) if y_prob is not None else np.nan
-            else:
-                results[name] = metric_fn(y_true, y_pred)
+            elif name == 'BA':
+                results[name] = balanced_accuracy_score(y_true, y_pred)
+            elif name == 'F1':
+                results[name] = f1_score(y_true, y_pred)
+            elif name == 'F2':
+                results[name] = fbeta_score(y_true, y_pred, beta=2)
+            elif name == 'Recall':
+                results[name] = recall_score(y_true, y_pred)
+            elif name == 'Precision':
+                results[name] = precision_score(y_true, y_pred)
         return results
