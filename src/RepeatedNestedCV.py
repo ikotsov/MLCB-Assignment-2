@@ -57,7 +57,7 @@ class RepeatedNestedCV:
         self.results = []
 
     def run(self):
-        self.clear_results()  # Reset results on each call
+        self.clear_results()  # Reset results on each call.
 
         for r in range(self.R):
             print(f"\n>>> Repetition {r + 1}/{self.R}")
@@ -106,7 +106,7 @@ class RepeatedNestedCV:
     def _objective(self, trial, estimator_name, X_train, y_train, rep):
         estimator_class = self.estimators[estimator_name]
         param_space = self.param_spaces[estimator_name]
-        # Suggest a new set of hyperparameters for this trial
+        # Suggest a new set of hyperparameters for this trial.
         params = param_space(trial)
 
         pipeline = self._build_pipeline(estimator_class(**params))
@@ -116,7 +116,7 @@ class RepeatedNestedCV:
 
         scores = []
         for train_subset, val_subset in inner_cv.split(X_train, y_train):
-            # Train on inner train split, evaluate on inner validation split
+            # Train on inner train split, evaluate on inner validation split.
             pipeline.fit(X_train[train_subset], y_train[train_subset])
             y_pred = pipeline.predict(X_train[val_subset])
             score = f1_score(y_train[val_subset], y_pred)
@@ -138,7 +138,7 @@ class RepeatedNestedCV:
             if name == 'MCC':
                 results[name] = matthews_corrcoef(y_true, y_pred)
             elif name == 'AUC':
-                # AUC requires probability estimates instead of discrete predictions
+                # AUC requires probability estimates instead of discrete predictions.
                 results[name] = roc_auc_score(
                     y_true, y_prob) if y_prob is not None else np.nan
             elif name == 'BA':
