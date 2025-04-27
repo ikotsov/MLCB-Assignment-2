@@ -12,6 +12,9 @@ from optuna.samplers import TPESampler
 import warnings
 warnings.filterwarnings('ignore')
 
+# Suppress Optuna logging to avoid cluttering the output.
+# optuna.logging.set_verbosity(optuna.logging.CRITICAL)
+
 NUM_TRIALS = 50  # Number of trials for Optuna
 DEFAULT_R = 10  # Number of rounds for the nCV
 DEFAULT_N = 5  # Number of outer fold loops
