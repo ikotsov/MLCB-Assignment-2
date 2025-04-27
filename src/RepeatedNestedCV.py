@@ -3,7 +3,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import matthews_corrcoef, roc_auc_score, balanced_accuracy_score, f1_score, fbeta_score, recall_score, precision_score
 import optuna
 from optuna.samplers import TPESampler
-from src.PipelineBuilder import PipelineBuilder
+from PipelineBuilder import PipelineBuilder
 
 # Suppress warnings to keep notebooks clean. Comment this out while debugging.
 import warnings
