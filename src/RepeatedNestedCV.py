@@ -134,8 +134,8 @@ class RepeatedNestedCV:
         for name in self.METRICS:
             if name == 'MCC':
                 results[name] = matthews_corrcoef(y_true, y_pred)
-            # AUC requires probability estimates instead of discrete predictions
             elif name == 'AUC':
+                # AUC requires probability estimates instead of discrete predictions
                 results[name] = roc_auc_score(
                     y_true, y_prob) if y_prob is not None else np.nan
             elif name == 'BA':
@@ -143,6 +143,7 @@ class RepeatedNestedCV:
             elif name == 'F1':
                 results[name] = f1_score(y_true, y_pred)
             elif name == 'F2':
+                # beta > 1, we care more about recall (we want fewer false negatives).
                 results[name] = fbeta_score(y_true, y_pred, beta=2)
             elif name == 'Recall':
                 results[name] = recall_score(y_true, y_pred)
