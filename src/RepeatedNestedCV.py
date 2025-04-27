@@ -1,12 +1,9 @@
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.impute import SimpleImputer
-from sklearn.decomposition import PCA
 from sklearn.metrics import matthews_corrcoef, roc_auc_score, balanced_accuracy_score, f1_score, fbeta_score, recall_score, precision_score
 import optuna
 from optuna.samplers import TPESampler
+from src.PipelineBuilder import PipelineBuilder
 
 # Suppress warnings to keep notebooks clean. Comment this out while debugging.
 import warnings
@@ -79,7 +76,7 @@ class RepeatedNestedCV:
 
                     best_params = study.best_params
                     estimator_cls = self.estimators[name]
-                    pipeline = self._build_pipeline(
+                    pipeline = PipelineBuilder.create(
                         estimator_cls(**best_params))
                     pipeline.fit(X_train, y_train)
                     y_pred = pipeline.predict(X_test)
@@ -109,7 +106,7 @@ class RepeatedNestedCV:
         # Suggest a new set of hyperparameters for this trial.
         params = param_space(trial)
 
-        pipeline = self._build_pipeline(estimator_class(**params))
+        pipeline = PipelineBuilder.create(estimator_class(**params))
 
         inner_cv = StratifiedKFold(
             n_splits=self.K, shuffle=True, random_state=self.seed + rep)
@@ -123,14 +120,6 @@ class RepeatedNestedCV:
             scores.append(score)
 
         return np.mean(scores)
-
-    def _build_pipeline(self, estimator):
-        return Pipeline([
-            ('imputer', SimpleImputer(strategy='median')),
-            ('scaler', StandardScaler()),
-            ('pca', PCA(n_components=0.95)),
-            ('clf', estimator)
-        ])
 
     def _compute_metrics(self, y_true, y_pred, y_prob=None):
         results = {}
