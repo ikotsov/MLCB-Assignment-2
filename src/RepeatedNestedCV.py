@@ -125,7 +125,7 @@ class RepeatedNestedCV:
         return Pipeline([
             ('imputer', SimpleImputer(strategy='median')),
             ('scaler', StandardScaler()),
-            ('pca', PCA(n_components=7)),
+            ('pca', PCA(n_components=0.95)),
             ('clf', estimator)
         ])
 
