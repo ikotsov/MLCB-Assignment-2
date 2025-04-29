@@ -43,8 +43,8 @@ class RepeatedNestedCV:
             seed (int, optional): Base random seed used to ensure reproducibility across folds 
                 and tuning trials.
         """
-        self.X = X
-        self.y = y
+        self.X = np.asarray(X)
+        self.y = np.asarray(y)
         self.estimators = estimators
         self.param_spaces = param_spaces
         self.R = R
