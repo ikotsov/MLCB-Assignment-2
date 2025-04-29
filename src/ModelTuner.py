@@ -10,9 +10,6 @@ DEFAULT_NUM_TRIALS = 50  # Number of trials for Optuna.
 DEFAULT_NUM_SPLITS = 5  # Number of folds for cross-validation.
 DEFAULT_SEED = 42
 
-# Default path to save the model.
-DEFAULT_MODEL_PATH = './models/final_model.pkl'
-
 
 class ModelTuner:
     """
@@ -64,7 +61,7 @@ class ModelTuner:
         pipeline.fit(self.X, self.y)
         return pipeline
 
-    def save(self, model, path=DEFAULT_MODEL_PATH):
+    def save(self, model, path=None):
         """
         Save the trained model to a file.
 
@@ -72,6 +69,10 @@ class ModelTuner:
             model (Pipeline): Trained sklearn pipeline.
             path (str): File path to save the model.
         """
+        if path is None:
+            raise ValueError(
+                "A valid file path must be provided to save the model.")
+
         os.makedirs(os.path.dirname(path),
                     exist_ok=True)  # Create folder if missing.
         joblib.dump(model, path)
