@@ -6,9 +6,12 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import f1_score
 from PipelineBuilder import PipelineBuilder
 
-DEFAULT_NUM_TRIALS = 50  # Number of trials for Optuna
-DEFAULT_NUM_SPLITS = 5  # Number of folds for cross-validation
+DEFAULT_NUM_TRIALS = 50  # Number of trials for Optuna.
+DEFAULT_NUM_SPLITS = 5  # Number of folds for cross-validation.
 DEFAULT_SEED = 42
+
+# Default path to save the model.
+DEFAULT_MODEL_PATH = './models/final_model.pkl'
 
 
 class ModelTuner:
@@ -61,7 +64,7 @@ class ModelTuner:
         pipeline.fit(self.X, self.y)
         return pipeline
 
-    def save(self, model, path='./models/final_model.pkl'):
+    def save(self, model, path=DEFAULT_MODEL_PATH):
         """
         Save the trained model to a file.
 
@@ -70,7 +73,7 @@ class ModelTuner:
             path (str): File path to save the model.
         """
         os.makedirs(os.path.dirname(path),
-                    exist_ok=True)  # Create folder if missing
+                    exist_ok=True)  # Create folder if missing.
         joblib.dump(model, path)
 
     def _objective(self, trial):
