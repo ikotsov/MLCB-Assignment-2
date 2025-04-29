@@ -6,14 +6,17 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import f1_score
 from PipelineBuilder import PipelineBuilder
 
+DEFAULT_NUM_TRIALS = 50  # Number of trials for Optuna
+DEFAULT_NUM_SPLITS = 5  # Number of folds for cross-validation
+DEFAULT_SEED = 42
+
 
 class ModelTuner:
     """
-    This class performs final hyperparameter tuning using 5-fold CV and trains the final model
-    on the full dataset, saving it for deployment.
+    This class performs hyperparameter tuning using CV, trains the model and saves it for deployment.
     """
 
-    def __init__(self, X, y, estimator, param_space, n_splits=5, seed=42):
+    def __init__(self, X, y, estimator, param_space, n_splits=DEFAULT_NUM_SPLITS, seed=DEFAULT_SEED):
         """
         Args:
             X (array-like): Feature matrix.
@@ -30,7 +33,7 @@ class ModelTuner:
         self.n_splits = n_splits
         self.seed = seed
 
-    def tune(self, n_trials=50):
+    def tune(self, n_trials=DEFAULT_NUM_TRIALS):
         """
         Tune hyperparameters using Optuna.
 
@@ -81,7 +84,6 @@ class ModelTuner:
                              shuffle=True, random_state=self.seed)
 
         scores = []
-
         for train_idx, val_idx in cv.split(self.X, self.y):
             pipeline.fit(self.X[train_idx], self.y[train_idx])
             y_pred = pipeline.predict(self.X[val_idx])
