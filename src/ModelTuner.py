@@ -47,7 +47,7 @@ class ModelTuner:
         study.optimize(self._objective, n_trials=n_trials)
         return study.best_params
 
-    def train(self, best_params):
+    def fit(self, best_params):
         """
         Train the final model on the full dataset using best hyperparameters.
 
