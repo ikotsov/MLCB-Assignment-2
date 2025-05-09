@@ -5,6 +5,8 @@ import optuna
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import f1_score
 from PipelineBuilder import PipelineBuilder
+from ModelEvaluator import ModelEvaluator
+from optuna.samplers import TPESampler
 
 DEFAULT_NUM_TRIALS = 50  # Number of trials for Optuna.
 DEFAULT_NUM_SPLITS = 5  # Number of folds for cross-validation.
@@ -43,7 +45,8 @@ class ModelTuner:
         Returns:
             dict: Best hyperparameters found.
         """
-        study = optuna.create_study(direction="maximize")
+        study = optuna.create_study(
+            direction="maximize", sampler=TPESampler(seed=self.seed))
         study.optimize(self._objective, n_trials=n_trials)
         return study.best_params
 
@@ -87,11 +90,4 @@ class ModelTuner:
         cv = StratifiedKFold(n_splits=self.n_splits,
                              shuffle=True, random_state=self.seed)
 
-        scores = []
-        for train_idx, val_idx in cv.split(self.X, self.y):
-            pipeline.fit(self.X[train_idx], self.y[train_idx])
-            y_pred = pipeline.predict(self.X[val_idx])
-            score = f1_score(self.y[val_idx], y_pred)
-            scores.append(score)
-
-        return np.mean(scores)
+        return ModelEvaluator.evaluate(pipeline, self.X, self.y, cv)

@@ -4,6 +4,7 @@ from sklearn.metrics import matthews_corrcoef, roc_auc_score, balanced_accuracy_
 import optuna
 from optuna.samplers import TPESampler
 from PipelineBuilder import PipelineBuilder
+from ModelEvaluator import ModelEvaluator
 
 # Suppress warnings to keep notebooks clean. Comment this out while debugging.
 import warnings
@@ -111,15 +112,7 @@ class RepeatedNestedCV:
         inner_cv = StratifiedKFold(
             n_splits=self.K, shuffle=True, random_state=self.seed + rep)
 
-        scores = []
-        for train_subset, val_subset in inner_cv.split(X_train, y_train):
-            # Train on inner train split, evaluate on inner validation split.
-            pipeline.fit(X_train[train_subset], y_train[train_subset])
-            y_pred = pipeline.predict(X_train[val_subset])
-            score = f1_score(y_train[val_subset], y_pred)
-            scores.append(score)
-
-        return np.mean(scores)
+        return ModelEvaluator.evaluate(pipeline, X_train, y_train, inner_cv)
 
     def _compute_metrics(self, y_true, y_pred, y_prob=None):
         results = {}
